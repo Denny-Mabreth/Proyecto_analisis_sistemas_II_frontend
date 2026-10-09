@@ -1,16 +1,20 @@
 .app-container {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 4rem 2rem;
 }
 
 .header {
   margin-bottom: 4rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--border-color);
   padding-bottom: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  border-color: #61c533;
+  padding: 2rem;
+  border-radius: 1rem;
+  color: #00913f;
 }
 
 .title {
@@ -21,6 +25,7 @@
 .subtitle {
   color: var(--text-secondary);
   font-size: 1.1rem;
+  color: #1B4200;
 }
 
 .status-badge {
@@ -40,4 +45,31 @@
 
 .status-badge.offline {
   color: var(--danger-color);
+}
+
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  color: var(--accent-color);
+  border-bottom-color: var(--accent-color);
 }

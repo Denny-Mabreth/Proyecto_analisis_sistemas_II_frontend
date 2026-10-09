@@ -2,11 +2,11 @@
 
 :root {
   --bg-color: #ffffff;
-  --surface-color: #fafafa;
+  --surface-color: #f2fcf5;
   --border-color: #eaeaea;
-  --text-primary: #111111;
+  --text-primary: #008539bd;
   --text-secondary: #666666;
-  --accent-color: #000000;
+  --accent-color: #61c533;
   --accent-hover: #333333;
   --danger-color: #e00;
   --success-color: #0070f3;
@@ -28,7 +28,12 @@ body {
   line-height: 1.5;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   letter-spacing: -0.02em;
 }
