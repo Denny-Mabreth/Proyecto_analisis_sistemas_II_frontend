@@ -54,12 +54,18 @@ export const Municipalidades = () => {
     if (!window.confirm('¿Seguro que deseas eliminar esta municipalidad?')) return;
     
     try {
-      await fetch(`${API_URL}/municipalidades/${id}`, {
+      const res = await fetch(`${API_URL}/municipalidades/${id}`, {
         method: 'DELETE',
       });
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(errorData.message || 'No se pudo eliminar la municipalidad.');
+        return;
+      }
       fetchMunicipalidades();
     } catch (error) {
       console.error('Error deleting municipalidad:', error);
+      alert('Error de conexión al intentar eliminar.');
     }
   };
 

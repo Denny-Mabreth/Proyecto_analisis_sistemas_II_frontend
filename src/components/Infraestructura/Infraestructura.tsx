@@ -187,7 +187,18 @@ export const Infraestructura = () => {
 
   const handleDeleteEstacion = async (id: number) => {
     if (!window.confirm('¿Seguro que deseas eliminar esta estación?')) return;
-    try { await fetch(`${API_URL}/estaciones/${id}`, { method: 'DELETE' }); fetchData(); } catch (err) { console.error(err); }
+    try {
+      const response = await fetch(`${API_URL}/estaciones/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || 'Error al eliminar la estación.');
+        return;
+      }
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al intentar eliminar la estación.');
+    }
   };
 
   const handleAssignParqueoToEstacion = async (estacionId: number, e: React.FormEvent) => {
@@ -228,7 +239,18 @@ export const Infraestructura = () => {
 
   const handleDeleteParqueo = async (id: number) => {
     if (!window.confirm('¿Seguro que deseas eliminar este parqueo?')) return;
-    try { await fetch(`${API_URL}/parqueos/${id}`, { method: 'DELETE' }); fetchData(); } catch (err) { console.error(err); }
+    try {
+      const response = await fetch(`${API_URL}/parqueos/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || 'Error al eliminar el parqueo.');
+        return;
+      }
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al intentar eliminar el parqueo.');
+    }
   };
 
   // --- ACCESOS LOGIC ---
@@ -288,7 +310,18 @@ export const Infraestructura = () => {
 
   const handleDeleteAcceso = async (id: number) => {
     if (!window.confirm('¿Seguro que deseas eliminar este acceso?')) return;
-    try { await fetch(`${API_URL}/accesos/${id}`, { method: 'DELETE' }); fetchData(); } catch (err) { console.error(err); }
+    try {
+      const response = await fetch(`${API_URL}/accesos/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.message || 'Error al eliminar el acceso.');
+        return;
+      }
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al intentar eliminar el acceso.');
+    }
   };
 
   const handleAssignGuardiaToAcceso = async (accesoId: number, e: React.FormEvent) => {

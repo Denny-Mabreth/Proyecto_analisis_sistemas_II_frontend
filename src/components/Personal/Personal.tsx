@@ -106,7 +106,18 @@ export const Personal = () => {
 
   const handleDeletePiloto = async (id: number) => {
     if (!window.confirm('¿Seguro que deseas eliminar este piloto?')) return;
-    try { await fetch(`${API_URL}/pilotos/${id}`, { method: 'DELETE' }); fetchData(); } catch (err) { console.error(err); }
+    try {
+      const response = await fetch(`${API_URL}/pilotos/${id}`, { method: 'DELETE' });
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message || 'Error al eliminar el piloto.');
+        return;
+      }
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert('Error de conexión al intentar eliminar.');
+    }
   };
 
   // --- GUARDIAS LOGIC ---
