@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { Municipalidades } from './components/Municipalidades/Municipalidades';
 import { Lineas } from './components/Lineas/Lineas';
-import { Estaciones } from './components/Estaciones/Estaciones';
-import { Parqueos } from './components/Parqueos/Parqueos';
+import { Infraestructura } from './components/Infraestructura/Infraestructura';
 import { Buses } from './components/Buses/Buses';
-import { Pilotos } from './components/Pilotos/Pilotos';
+import { Personal } from './components/Personal/Personal';
+import { Monitoreo } from './components/Monitoreo/Monitoreo';
 
 function App() {
   const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'municipalidades' | 'lineas' | 'estaciones' | 'parqueos' | 'buses' | 'pilotos'>('municipalidades');
+  const [activeTab, setActiveTab] = useState<'municipalidades' | 'infraestructura' | 'lineas' | 'buses' | 'personal' | 'monitoreo'>('municipalidades');
 
   useEffect(() => {
     const checkConnection = async () => {
@@ -50,22 +50,16 @@ function App() {
             Municipalidades
           </button>
           <button
-            className={`tab-btn ${activeTab === 'estaciones' ? 'active' : ''}`}
-            onClick={() => setActiveTab('estaciones')}
+            className={`tab-btn ${activeTab === 'personal' ? 'active' : ''}`}
+            onClick={() => setActiveTab('personal')}
           >
-            Estaciones
+            Personal
           </button>
           <button
-            className={`tab-btn ${activeTab === 'parqueos' ? 'active' : ''}`}
-            onClick={() => setActiveTab('parqueos')}
+            className={`tab-btn ${activeTab === 'infraestructura' ? 'active' : ''}`}
+            onClick={() => setActiveTab('infraestructura')}
           >
-            Parqueos
-          </button>
-          <button
-            className={`tab-btn ${activeTab === 'lineas' ? 'active' : ''}`}
-            onClick={() => setActiveTab('lineas')}
-          >
-            Líneas de Buses
+            Infraestructura
           </button>
           <button
             className={`tab-btn ${activeTab === 'buses' ? 'active' : ''}`}
@@ -74,19 +68,25 @@ function App() {
             Buses
           </button>
           <button
-            className={`tab-btn ${activeTab === 'pilotos' ? 'active' : ''}`}
-            onClick={() => setActiveTab('pilotos')}
+            className={`tab-btn ${activeTab === 'lineas' ? 'active' : ''}`}
+            onClick={() => setActiveTab('lineas')}
           >
-            Pilotos
+            Líneas de Buses
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'monitoreo' ? 'active' : ''}`}
+            onClick={() => setActiveTab('monitoreo')}
+          >
+            Monitoreo
           </button>
         </div>
 
         {activeTab === 'municipalidades' && <Municipalidades />}
-        {activeTab === 'estaciones' && <Estaciones />}
+        {activeTab === 'infraestructura' && <Infraestructura />}
         {activeTab === 'lineas' && <Lineas />}
-        {activeTab === 'parqueos' && <Parqueos />}
         {activeTab === 'buses' && <Buses />}
-        {activeTab === 'pilotos' && <Pilotos />}
+        {activeTab === 'personal' && <Personal />}
+        {activeTab === 'monitoreo' && <Monitoreo />}
       </main>
     </div>
   );

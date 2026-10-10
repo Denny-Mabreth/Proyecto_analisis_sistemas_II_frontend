@@ -19,11 +19,14 @@ export const Buses = () => {
   const [lineas, setLineas] = useState<Linea[]>([]);
   const [pilotos, setPilotos] = useState<Piloto[]>([]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [placa, setPlaca] = useState('');
   const [capacidadMaxima, setCapacidadMaxima] = useState('');
   const [parqueoId, setParqueoId] = useState('');
   const [lineaId, setLineaId] = useState('');
   const [pilotoId, setPilotoId] = useState('');
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -43,7 +46,7 @@ export const Buses = () => {
       const [resP, resL, resPi] = await Promise.all([
         fetch(`${API_URL}/parqueos`),
         fetch(`${API_URL}/lineas`),
-        fetch(`${API_URL}/pilotos`).catch(() => ({ json: () => [] })) // Graceful fail if pilotos not implemented in backend
+        fetch(`${API_URL}/pilotos`).catch(() => ({ json: () => [] }))
       ]);
       const dataP = await resP.json();
       const dataL = await resL.json();
@@ -58,6 +61,32 @@ export const Buses = () => {
     fetchBuses();
     fetchDependencies();
   }, []);
+
+  const openModal = (bus?: Bus) => {
+    if (bus) {
+      setEditingId(bus.id);
+      setPlaca(bus.placa);
+      setCapacidadMaxima(bus.capacidad_maxima.toString());
+      setParqueoId(bus.parqueo ? bus.parqueo.id.toString() : '');
+      setLineaId(bus.linea ? bus.linea.id.toString() : '');
+      setPilotoId(bus.piloto ? bus.piloto.id.toString() : '');
+    } else {
+      setEditingId(null);
+      setPlaca('');
+      setCapacidadMaxima('');
+      setParqueoId('');
+      setLineaId('');
+      setPilotoId('');
+    }
+    setError(null);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingId(null);
+    setError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,12 +111,7 @@ export const Buses = () => {
       if (!response.ok) {
         throw new Error(data.message || (editingId ? 'Error al actualizar bus' : 'Error al crear bus'));
       }
-      setPlaca('');
-      setCapacidadMaxima('');
-      setParqueoId('');
-      setLineaId('');
-      setPilotoId('');
-      setEditingId(null);
+      handleCloseModal();
       fetchBuses();
     } catch (err: any) {
       setError(err.message);
@@ -104,71 +128,23 @@ export const Buses = () => {
     } catch (err) { console.error(err); }
   };
 
-  const handleEdit = (bus: Bus) => {
-    setEditingId(bus.id);
-    setPlaca(bus.placa);
-    setCapacidadMaxima(bus.capacidad_maxima.toString());
-    setParqueoId(bus.parqueo ? bus.parqueo.id.toString() : '');
-    setLineaId(bus.linea ? bus.linea.id.toString() : '');
-    setPilotoId(bus.piloto ? bus.piloto.id.toString() : '');
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setPlaca('');
-    setCapacidadMaxima('');
-    setParqueoId('');
-    setLineaId('');
-    setPilotoId('');
-    setError(null);
-  };
-
   return (
     <section className="buses-section">
       <div className="section-header">
         <h2 className="section-title">Gestión de Buses</h2>
       </div>
 
-      {error && <div style={{ color: 'red', marginBottom: '1rem', padding: '0.5rem', background: '#ffebee', borderRadius: '4px' }}>{error}</div>}
+      {error && <div className="error-message">{error}</div>}
 
-      <form className="form-container" onSubmit={handleSubmit}>
-        <input type="text" className="input-field" placeholder="Placa (ej. P-123ABC)" value={placa} onChange={e => setPlaca(e.target.value)} disabled={loading} required />
-        <input type="number" className="input-field" placeholder="Capacidad máxima" value={capacidadMaxima} onChange={e => setCapacidadMaxima(e.target.value)} disabled={loading} required />
-
-        <select className="select-field" value={parqueoId} onChange={e => setParqueoId(e.target.value)} disabled={loading} required>
-          <option value="">Selecciona Parqueo (Obligatorio)</option>
-          {parqueos.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
-        </select>
-
-        <select className="select-field" value={lineaId} onChange={e => setLineaId(e.target.value)} disabled={loading}>
-          <option value="">Sin Línea (Opcional)</option>
-          {lineas.map(l => <option key={l.id} value={l.id}>{l.nombre}</option>)}
-        </select>
-
-        {pilotos.length > 0 && (
-          <select className="select-field" value={pilotoId} onChange={e => setPilotoId(e.target.value)} disabled={loading}>
-            <option value="">Sin Piloto (Opcional)</option>
-            {pilotos.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
-          </select>
-        )}
-
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button type="submit" className="btn" disabled={loading || !placa.trim() || !capacidadMaxima || !parqueoId} style={{ flex: 1 }}>
-            {loading ? 'Guardando...' : (editingId ? 'Actualizar Bus' : 'Registrar Bus')}
-          </button>
-          {editingId && (
-            <button type="button" className="btn" style={{ flex: 1, backgroundColor: '#666' }} onClick={handleCancelEdit} disabled={loading}>
-              Cancelar
-            </button>
-          )}
-        </div>
-      </form>
+      <div className="action-bar">
+        <button className="btn" onClick={() => openModal()}>+ Nuevo Bus</button>
+      </div>
 
       <div className="table-container">
         {buses.length === 0 ? (
           <div className="empty-state">No hay buses registrados.</div>
         ) : (
-          <table className="minimal-table">
+          <table className="data-table">
             <thead>
               <tr>
                 <th>Placa</th>
@@ -187,8 +163,8 @@ export const Buses = () => {
                   <td>{bus.parqueo ? bus.parqueo.nombre : 'Error: Sin parqueo'}</td>
                   <td>{bus.linea ? bus.linea.nombre : 'No asignada'}</td>
                   <td>{bus.piloto ? bus.piloto.nombre : 'Sin piloto'}</td>
-                  <td style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button className="btn" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }} onClick={() => handleEdit(bus)}>Editar</button>
+                  <td className="actions-cell">
+                    <button className="btn btn-small" onClick={() => openModal(bus)}>Editar</button>
                     <button className="delete-btn" onClick={() => handleDelete(bus.id)}>Eliminar</button>
                   </td>
                 </tr>
@@ -197,6 +173,62 @@ export const Buses = () => {
           </table>
         )}
       </div>
+
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={handleCloseModal}>
+          <div className="modal-container" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{editingId ? 'Editar Bus' : 'Registrar Nuevo Bus'}</h3>
+              <button className="modal-close" onClick={handleCloseModal}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <form className="buses-form-grid" onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label>Placa del Bus *</label>
+                  <input type="text" className="input-field" placeholder="Ej. P-123ABC" value={placa} onChange={e => setPlaca(e.target.value)} disabled={loading} required />
+                </div>
+                <div className="form-group">
+                  <label>Capacidad Máxima *</label>
+                  <input type="number" className="input-field" placeholder="Número de pasajeros" value={capacidadMaxima} onChange={e => setCapacidadMaxima(e.target.value)} disabled={loading} required />
+                </div>
+                <div className="form-group full-width">
+                  <label>Parqueo Base *</label>
+                  <select className="select-field" value={parqueoId} onChange={e => setParqueoId(e.target.value)} disabled={loading} required>
+                    <option value="">Selecciona Parqueo...</option>
+                    {parqueos.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+                  </select>
+                </div>
+                <div className="form-group full-width">
+                  <label>Línea Asignada (Opcional)</label>
+                  <select className="select-field" value={lineaId} onChange={e => setLineaId(e.target.value)} disabled={loading}>
+                    <option value="">Sin Línea</option>
+                    {lineas.map(l => <option key={l.id} value={l.id}>{l.nombre}</option>)}
+                  </select>
+                </div>
+                {pilotos.length > 0 && (
+                  <div className="form-group full-width">
+                    <label>Piloto Asignado (Opcional)</label>
+                    <select className="select-field" value={pilotoId} onChange={e => setPilotoId(e.target.value)} disabled={loading}>
+                      <option value="">Sin Piloto</option>
+                      {pilotos.map(p => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                <div className="modal-actions">
+                  <button type="submit" className="btn flex-1" disabled={loading || !placa.trim() || !capacidadMaxima || !parqueoId}>
+                    {loading ? 'Guardando...' : (editingId ? 'Actualizar Bus' : 'Registrar Bus')}
+                  </button>
+                  <button type="button" className="btn btn-secondary flex-1" onClick={handleCloseModal} disabled={loading}>
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
     </section>
   );
 };
