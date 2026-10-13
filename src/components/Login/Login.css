@@ -1,0 +1,223 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0fdf4 0%, #e6f9ed 50%, #dcfce7 100%);
+  padding: 1.5rem;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 145, 63, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(97, 197, 51, 0.25);
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  animation: cardFadeIn 0.35s ease-out;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-brand {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.login-brand-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #00913f 0%, #61c533 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 16px rgba(0, 145, 63, 0.2);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease;
+}
+
+.login-brand-icon:active {
+  transform: scale(0.92);
+}
+
+.login-brand-icon svg {
+  width: 34px;
+  height: 34px;
+}
+
+.login-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #007030;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.login-subtitle {
+  font-size: 0.95rem;
+  color: #4b6354;
+  margin: 0;
+}
+
+.login-alert {
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.login-alert.error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.login-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f3b2b;
+}
+
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-wrap svg {
+  position: absolute;
+  left: 0.9rem;
+  width: 18px;
+  height: 18px;
+  color: #839d8e;
+  pointer-events: none;
+}
+
+.login-input {
+  width: 100%;
+  padding: 0.8rem 0.9rem 0.8rem 2.5rem;
+  font-size: 0.95rem;
+  border: 1.5px solid #d1e5d7;
+  border-radius: 8px;
+  background-color: #fafdfb;
+  color: #142a1e;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #61c533;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(97, 197, 51, 0.2);
+}
+
+.login-btn-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: linear-gradient(135deg, #00913f 0%, #4da628 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 145, 63, 0.25);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.login-btn-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #007c36 0%, #3d8c1e 100%);
+  box-shadow: 0 6px 16px rgba(0, 145, 63, 0.35);
+  transform: translateY(-1px);
+}
+
+.login-btn-submit:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-credentials-box {
+  background: #f4faf6;
+  border: 1px dashed #a7deb5;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: #275238;
+  animation: eggFadeIn 0.3s ease-out;
+}
+
+@keyframes eggFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-credentials-box strong {
+  color: #007030;
+}
+
+.login-credentials-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.credential-chip {
+  background: #ffffff;
+  border: 1px solid #c7e8d0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #0d4a25;
+}
