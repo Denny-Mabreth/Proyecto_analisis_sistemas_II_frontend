@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Infraestructura.css';
+import { downloadExcel, getFormattedDate } from '../../utils/excelExport';
 
 interface Municipalidad {
   id: number;
@@ -343,6 +344,71 @@ export const Infraestructura = () => {
     try { await fetch(`${API_URL}/guardias/${guardiaId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ accesoId: null }) }); fetchData(); } catch (err) { console.error(err); }
   };
 
+  // --- EXPORTACIONES EXCEL ---
+  const handleExportEstacionesExcel = () => {
+    const headers = [
+      'ID',
+      'Nombre de Estación',
+      'Municipalidad',
+      'Parqueos Vinculados',
+      'Total Parqueos',
+      'Puntos de Acceso'
+    ];
+    const rows = estaciones.map(est => {
+      const parqueosTexto = (est.parqueos && est.parqueos.length > 0)
+        ? est.parqueos.map(p => p.nombre).join('; ')
+        : 'Sin parqueos';
+      const cantidadParqueos = est.parqueos ? est.parqueos.length : 0;
+      const accesosTexto = (est.accesos && est.accesos.length > 0)
+        ? est.accesos.map(a => a.nombre).join('; ')
+        : 'Sin accesos';
+
+      return [
+        est.id,
+        est.nombre,
+        est.municipalidad?.nombre || 'Sin asignar',
+        parqueosTexto,
+        cantidadParqueos,
+        accesosTexto
+      ];
+    });
+
+    downloadExcel(`reporte_estaciones_${getFormattedDate()}`, 'Estaciones', headers, rows);
+  };
+
+  const handleExportParqueosExcel = () => {
+    const headers = ['ID', 'Nombre del Parqueo', 'Estación Asignada'];
+    const rows = parqueos.map(p => [
+      p.id,
+      p.nombre,
+      p.estacion?.nombre || 'Sin asignar'
+    ]);
+    downloadExcel(`reporte_parqueos_${getFormattedDate()}`, 'Parqueos', headers, rows);
+  };
+
+  const handleExportAccesosExcel = () => {
+    const headers = [
+      'ID',
+      'Nombre de Acceso',
+      'Estación',
+      'Total Guardias',
+      'Guardias Asignados'
+    ];
+    const rows = accesos.map(acc => {
+      const guardiasTexto = (acc.guardias && acc.guardias.length > 0)
+        ? acc.guardias.map(g => `${g.nombre} (DPI: ${g.dpi})`).join('; ')
+        : 'Sin guardias';
+      return [
+        acc.id,
+        acc.nombre,
+        acc.estacion?.nombre || 'Sin asignar',
+        acc.guardias?.length || 0,
+        guardiasTexto
+      ];
+    });
+    downloadExcel(`reporte_accesos_${getFormattedDate()}`, 'Accesos', headers, rows);
+  };
+
   return (
     <section className="infraestructura-section">
       <div className="section-header">
@@ -370,6 +436,14 @@ export const Infraestructura = () => {
       {activeSubTab === 'estaciones' && (
         <>
           <div className="action-bar">
+            <button
+              type="button"
+              className="btn btn-export"
+              onClick={handleExportEstacionesExcel}
+              disabled={estaciones.length === 0}
+            >
+              Exportar Excel
+            </button>
             <button className="btn" onClick={openBuilderEstacion}>+ Nueva Estación</button>
           </div>
           <div className="table-container">
@@ -406,6 +480,14 @@ export const Infraestructura = () => {
       {activeSubTab === 'parqueos' && (
         <>
           <div className="action-bar">
+            <button
+              type="button"
+              className="btn btn-export"
+              onClick={handleExportParqueosExcel}
+              disabled={parqueos.length === 0}
+            >
+              Exportar Excel
+            </button>
             <button className="btn" onClick={() => { setNombreParqueo(''); setIsParqueoModalOpen(true); }}>+ Nuevo Parqueo</button>
           </div>
           <div className="table-container">
@@ -434,6 +516,14 @@ export const Infraestructura = () => {
       {activeSubTab === 'accesos' && (
         <>
           <div className="action-bar">
+            <button
+              type="button"
+              className="btn btn-export"
+              onClick={handleExportAccesosExcel}
+              disabled={accesos.length === 0}
+            >
+              Exportar Excel
+            </button>
             <button className="btn" onClick={openBuilderAcceso}>+ Nuevo Acceso</button>
           </div>
           <div className="table-container">

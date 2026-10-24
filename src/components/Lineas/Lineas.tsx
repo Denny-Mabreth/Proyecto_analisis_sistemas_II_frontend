@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Lineas.css';
+import { downloadExcel, getFormattedDate } from '../../utils/excelExport';
 
 interface Municipalidad {
   id: number;
@@ -283,6 +284,46 @@ export const Lineas = () => {
     }
   };
 
+  const handleExportExcel = () => {
+    const headers = [
+      'ID',
+      'Nombre de Línea',
+      'Distancia (km)',
+      'Tipo de Ruta',
+      'Municipalidad',
+      'Total Estaciones',
+      'Estaciones de la Ruta',
+      'Total Buses Asignados',
+      'Buses Asignados'
+    ];
+    const rows = lineas.map(linea => {
+      const estacionesTexto = (linea.lineasEstaciones && linea.lineasEstaciones.length > 0)
+        ? [...linea.lineasEstaciones]
+            .sort((a, b) => a.orden - b.orden)
+            .map(le => `${le.orden}. ${le.estacion?.nombre || 'Estación'}`)
+            .join(' -> ')
+        : 'Sin estaciones asignadas';
+      
+      const busesTexto = (linea.buses && linea.buses.length > 0)
+        ? linea.buses.map(b => b.placa).join(', ')
+        : 'Sin buses asignados';
+
+      return [
+        linea.id,
+        linea.nombre,
+        linea.distancia_km,
+        linea.es_circuito ? 'Circuito Cerrado' : 'Lineal',
+        linea.municipalidad?.nombre || 'Sin asignar',
+        linea.lineasEstaciones?.length || 0,
+        estacionesTexto,
+        linea.buses?.length || 0,
+        busesTexto
+      ];
+    });
+
+    downloadExcel(`reporte_lineas_${getFormattedDate()}`, 'Lineas', headers, rows);
+  };
+
   return (
     <section className="lineas-section">
       <div className="section-header">
@@ -290,6 +331,14 @@ export const Lineas = () => {
       </div>
 
       <div className="action-bar">
+        <button
+          type="button"
+          className="btn btn-export"
+          onClick={handleExportExcel}
+          disabled={lineas.length === 0}
+        >
+          Exportar Excel
+        </button>
         <button className="btn" onClick={() => openBuilder()}>+ Crear Nueva Línea</button>
       </div>
 

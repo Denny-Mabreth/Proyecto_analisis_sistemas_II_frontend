@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Buses.css';
+import { downloadExcel, getFormattedDate } from '../../utils/excelExport';
 
 interface Parqueo { id: number; nombre: string; }
 interface Linea { id: number; nombre: string; }
@@ -128,6 +129,26 @@ export const Buses = () => {
     } catch (err) { console.error(err); }
   };
 
+  const handleExportExcel = () => {
+    const headers = [
+      'ID',
+      'Placa',
+      'Capacidad Máxima',
+      'Parqueo',
+      'Línea Asignada',
+      'Piloto Asignado'
+    ];
+    const rows = buses.map(bus => [
+      bus.id,
+      bus.placa,
+      bus.capacidad_maxima,
+      bus.parqueo?.nombre || 'Sin parqueo',
+      bus.linea?.nombre || 'Sin línea',
+      bus.piloto?.nombre || 'Sin piloto asignado'
+    ]);
+    downloadExcel(`reporte_buses_${getFormattedDate()}`, 'Buses', headers, rows);
+  };
+
   return (
     <section className="buses-section">
       <div className="section-header">
@@ -137,6 +158,14 @@ export const Buses = () => {
       {error && <div className="error-message">{error}</div>}
 
       <div className="action-bar">
+        <button
+          type="button"
+          className="btn btn-export"
+          onClick={handleExportExcel}
+          disabled={buses.length === 0}
+        >
+          Exportar Excel
+        </button>
         <button className="btn" onClick={() => openModal()}>+ Nuevo Bus</button>
       </div>
 

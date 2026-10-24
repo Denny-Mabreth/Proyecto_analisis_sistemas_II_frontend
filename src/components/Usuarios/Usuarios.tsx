@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Usuarios.css';
 import { User, UserRole } from '../../types/auth';
+import { downloadExcel, getFormattedDate } from '../../utils/excelExport';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000';
 
@@ -157,6 +158,26 @@ export const Usuarios: React.FC = () => {
     }
   };
 
+  const handleExportExcel = () => {
+    const headers = [
+      'ID',
+      'Nombre Completo',
+      'Nombre de Usuario',
+      'Teléfono',
+      'Rol',
+      'Estado'
+    ];
+    const rows = usuarios.map(u => [
+      u.id,
+      u.nombre,
+      u.username,
+      u.telefono || 'N/A',
+      u.rol,
+      u.activo !== false ? 'Activo' : 'Inactivo'
+    ]);
+    downloadExcel(`reporte_usuarios_${getFormattedDate()}`, 'Usuarios', headers, rows);
+  };
+
   return (
     <section className="usuarios-section">
       <div className="usuarios-header">
@@ -166,9 +187,19 @@ export const Usuarios: React.FC = () => {
             Control de cuentas y asignación de roles para el sistema Transmetro
           </p>
         </div>
-        <button className="btn" onClick={() => setIsCreateModalOpen(true)}>
-          + Nuevo Usuario
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="btn btn-export"
+            onClick={handleExportExcel}
+            disabled={usuarios.length === 0}
+          >
+            Exportar Excel
+          </button>
+          <button className="btn" onClick={() => setIsCreateModalOpen(true)}>
+            + Nuevo Usuario
+          </button>
+        </div>
       </div>
 
       {feedback && (

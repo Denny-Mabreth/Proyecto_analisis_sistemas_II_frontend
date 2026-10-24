@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Municipalidades.css';
+import { downloadExcel, getFormattedDate } from '../../utils/excelExport';
 
 interface Municipalidad {
   id: number;
@@ -69,10 +70,28 @@ export const Municipalidades = () => {
     }
   };
 
+  const handleExportExcel = () => {
+    const headers = ['ID', 'Nombre de la Municipalidad', 'Estado'];
+    const rows = municipalidades.map((mun) => [
+      mun.id,
+      mun.nombre,
+      mun.activo ? 'Activo' : 'Inactivo',
+    ]);
+    downloadExcel(`reporte_municipalidades_${getFormattedDate()}`, 'Municipalidades', headers, rows);
+  };
+
   return (
     <section className="municipalidades-section">
       <div className="section-header">
         <h2 className="section-title">Gestión de Municipalidades</h2>
+        <button
+          type="button"
+          className="btn btn-export"
+          onClick={handleExportExcel}
+          disabled={municipalidades.length === 0}
+        >
+          Exportar Excel
+        </button>
       </div>
 
       <form className="form-container" onSubmit={handleSubmit}>

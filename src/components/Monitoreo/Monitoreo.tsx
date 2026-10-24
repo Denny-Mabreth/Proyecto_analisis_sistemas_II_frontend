@@ -140,6 +140,52 @@ export const Monitoreo: React.FC = () => {
   );
   const fueraNorma = data.lineas.filter((l) => !l.cumple_flota);
 
+  const imprimirBitacora = () => {
+    const esc = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const filas = data.eventos
+      .map(
+        (ev) =>
+          `<tr><td>${formatoReloj(ev.minuto)}</td><td>${esc(ev.tipo)}</td><td>${esc(ev.mensaje)}</td></tr>`,
+      )
+      .join('');
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Bitácora de eventos</title>
+<style>
+  body { font-family: Arial, sans-serif; color: #222; margin: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; color: #007030; }
+  p { margin: 0 0 16px; font-size: 12px; color: #666; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #007030; color: #fff; text-align: left; padding: 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  td { padding: 6px 8px; border-bottom: 1px solid #ddd; vertical-align: top; }
+  td:first-child { white-space: nowrap; width: 60px; }
+  td:nth-child(2) { white-space: nowrap; width: 90px; }
+</style></head><body>
+<h1>Bitácora de eventos</h1>
+<p>Impreso el ${new Date().toLocaleString('es-GT')} · Hora simulada ${formatoReloj(data.minuto)}</p>
+<table><thead><tr><th>Hora</th><th>Tipo</th><th>Mensaje</th></tr></thead><tbody>${filas}</tbody></table>
+</body></html>`;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+    const doc = iframe.contentWindow?.document;
+    if (!doc || !iframe.contentWindow) {
+      document.body.removeChild(iframe);
+      return;
+    }
+    doc.open();
+    doc.write(html);
+    doc.close();
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  };
+
   return (
     <section className="mon-section">
       {/* Barra de estado */}
@@ -260,7 +306,17 @@ export const Monitoreo: React.FC = () => {
           )}
 
           <div className="mon-panel">
-            <h3>Bitácora de eventos</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem' }}>
+              <h3>Bitácora de eventos</h3>
+              <button
+                type="button"
+                className="mon-btn"
+                onClick={imprimirBitacora}
+                disabled={data.eventos.length === 0}
+              >
+                Imprimir bitácora
+              </button>
+            </div>
             {data.eventos.length === 0 ? (
               <p className="mon-muted">Esperando eventos…</p>
             ) : (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Personal.css';
+import { downloadExcel, getFormattedDate } from '../../utils/excelExport';
 
 interface Piloto {
   id: number;
@@ -150,6 +151,32 @@ export const Personal = () => {
     try { await fetch(`${API_URL}/guardias/${id}`, { method: 'DELETE' }); fetchData(); } catch (err) { console.error(err); }
   };
 
+  // --- EXPORTACIONES EXCEL ---
+  const handleExportPilotosExcel = () => {
+    const headers = ['ID', 'Nombre Completo', 'Historial Educativo', 'Residencia', 'Teléfono', 'Correo Electrónico'];
+    const rows = pilotos.map(p => [
+      p.id,
+      p.nombre,
+      p.historial_educativo || 'N/A',
+      p.residencia || 'N/A',
+      p.telefono || 'N/A',
+      p.correo || 'N/A'
+    ]);
+    downloadExcel(`reporte_pilotos_${getFormattedDate()}`, 'Pilotos', headers, rows);
+  };
+
+  const handleExportGuardiasExcel = () => {
+    const headers = ['ID', 'Nombre Completo', 'DPI', 'Punto de Acceso Asignado', 'Estado'];
+    const rows = guardias.map(g => [
+      g.id,
+      g.nombre,
+      g.dpi,
+      g.acceso?.nombre || 'Sin asignar',
+      g.acceso ? 'Asignado' : 'Disponible'
+    ]);
+    downloadExcel(`reporte_guardias_${getFormattedDate()}`, 'Guardias', headers, rows);
+  };
+
   return (
     <section className="personal-section">
       <div className="section-header">
@@ -173,6 +200,14 @@ export const Personal = () => {
       {activeSubTab === 'pilotos' && (
         <>
           <div className="action-bar">
+            <button
+              type="button"
+              className="btn btn-export"
+              onClick={handleExportPilotosExcel}
+              disabled={pilotos.length === 0}
+            >
+              Exportar Excel
+            </button>
             <button className="btn" onClick={() => openPilotoModal()}>+ Nuevo Piloto</button>
           </div>
           
@@ -204,6 +239,14 @@ export const Personal = () => {
       {activeSubTab === 'guardias' && (
         <>
           <div className="action-bar">
+            <button
+              type="button"
+              className="btn btn-export"
+              onClick={handleExportGuardiasExcel}
+              disabled={guardias.length === 0}
+            >
+              Exportar Excel
+            </button>
             <button className="btn" onClick={() => openGuardiaModal()}>+ Nuevo Guardia de Seguridad</button>
           </div>
 
